@@ -14,7 +14,7 @@ def accept_connection(server_socket):
 	"""
 	Функция запускается при обнаружении нового входящего подключения
 	"""
-	client_socket, addr = server_socket.accept() # извлекаем сокет клиента
+	client_socket, addr = server_socket.accept() # извлекаем сокет клиента и его адрес
 	print('У нас новое подключение с адреса:', addr)
 
 	to_monitor.append(client_socket) # начинаем мониторить над клиентсим сокетом
@@ -27,11 +27,11 @@ def send_message(client_socket):
 	request = client_socket.recv(4096) # обнаруженный запрос, 4096 - это размер буфера сообщения
 
 	if request:
-		print('Клиент нам что-то написал, ответим ему "хэллоу ворд"')
-		responce = 'Hello world\n'.encode()
+		print(f'Клиент нам написал \"{request.decode("utf-8")}\", поздороваемся с ним"')
+		responce = 'Hello client!\n'.encode()
 		client_socket.send(responce)
 	else:
-		print('Клиент ничего не написал, отключаемся от него и перестаем за ним следить')
+		print('Клиент отправил нам пустое сообщение, отключаемся от него и перестаем за ним следить')
 		to_monitor.remove(client_socket)
 		client_socket.close()
 
@@ -43,7 +43,7 @@ def event_loop():
 	"""
 	while True:
 
-		print('Ждем изменения файлов')
+		print('Ждем изменения файлов\n')
 		ready_to_read, _, _ = select(to_monitor, [], []) # read, write, errors
 		print('Какой-то файл изменился')
 
